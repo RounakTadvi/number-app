@@ -9,43 +9,64 @@ class NumberPage extends StatelessWidget {
   }
 }
 
-class ListWidget extends StatelessWidget {
+class ListWidget extends StatefulWidget {
   const ListWidget({super.key});
+
+  @override
+  State<ListWidget> createState() => _ListWidgetState();
+}
+
+class _ListWidgetState extends State<ListWidget> {
+  final List<int> _itemCounts = List.generate(100, (_) => 0);
+
   @override
   Widget build(BuildContext context) {
-    var list = <Widget>[];
-    for (var i = 0; i <= 100; i++) {
-      list.add(const ListItemWidget());
-    }
-    return ListView.builder(itemCount: list.length,itemBuilder: (context,index)=> list[index]);
+    return ListView.builder(
+      itemCount: _itemCounts.length,
+      itemBuilder: (context, index) => ListItemWidget(
+        count: _itemCounts[index],
+        onCountIncremented: () => _incrementCount(index),
+      ),
+    );
+  }
+
+  void _incrementCount(int index) {
+    setState(() {
+      _itemCounts[index]++;
+    });
   }
 }
 
 class ListItemWidget extends StatefulWidget {
-  const ListItemWidget({super.key});
+  final int count;
+  final VoidCallback onCountIncremented;
+
+  const ListItemWidget(
+      {Key? key, required this.count, required this.onCountIncremented})
+      : super(key: key);
+
   @override
   State<ListItemWidget> createState() => _ListItemWidgetState();
 }
 
-
 class _ListItemWidgetState extends State<ListItemWidget> {
-  var count = 0;
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: const EdgeInsets.all(4),
-        child: Row(
-          children: [
-            Text(count.toString()),
-            MaterialButton(
-              onPressed: () {
-                setState(() {
-                  count++;
-                });
-              },
-              child: const Text("+"),
-            )
-          ],
-        ));
+      padding: const EdgeInsets.all(4),
+      child: Row(
+        children: [
+          Text(widget.count.toString()),
+          MaterialButton(
+            onPressed: () {
+              setState(() {
+                widget.onCountIncremented();
+              });
+            },
+            child: const Text("+"),
+          ),
+        ],
+      ),
+    );
   }
 }
